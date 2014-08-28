@@ -167,7 +167,7 @@
         
         NSLog(@"New Press: %f",[recognizer minimumPressDuration]);
         
-        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPinchWithDuration:)]) {
+        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPressWithDuration:)]) {
             [self.delegate floatingToolbar:self didTryToPinchWithDuration:[recognizer minimumPressDuration]];
         }
         

@@ -17,7 +17,7 @@
 - (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title;
 - (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPanWithOffset: (CGPoint)offset;
 - (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithScale:(CGFloat)scale;
-- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithDuration:(CGFloat)minimumPressDuration;
+- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPressWithDuration:(CGFloat)minimumPressDuration;
 @end
 
 @interface BLCAwesomeFloatingToolbar : UIView

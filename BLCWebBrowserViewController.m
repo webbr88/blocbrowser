@@ -260,7 +260,7 @@
     }
 }
 
-- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithDuration:(CGFloat)duration {
+- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPressWithDuration:(CGFloat)duration {
    
     self.colors = @[[UIColor colorWithRed:0/255.0 green:158/255.0 blue:203/255.0 alpha:1],
                     [UIColor colorWithRed:3/255.0 green:105/255.0 blue:97/255.0 alpha:1],
