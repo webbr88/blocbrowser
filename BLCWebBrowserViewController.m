@@ -25,6 +25,9 @@
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
 @property (nonatomic, strong) BLCAwesomeFloatingToolbar *awesomeToolbar;
 @property (nonatomic, assign) NSUInteger frameCount;
+@property (nonatomic, strong) NSArray *currentTitles;
+@property (nonatomic, strong) NSArray *colors;
+@property (nonatomic, strong) NSArray *labels;
 
 @end
 
@@ -121,8 +124,12 @@
     
     
     CGFloat currentButtonX = 0;
+    NSLog(@" %f %f %f %f", self.awesomeToolbar.frame.origin.x, self.awesomeToolbar.frame.origin.y, self.awesomeToolbar.frame.size.height, self.awesomeToolbar.frame.size.width);
+    if (self.awesomeToolbar.frame.size.height==0 && self.awesomeToolbar.frame.size.width==0) {
+         self.awesomeToolbar.frame = CGRectMake(20, 140, 280, 60);
+    }
     
- self.awesomeToolbar.frame = CGRectMake(20, 100, 280, 60);
+
     
 }
 
@@ -229,6 +236,72 @@
     [self.awesomeToolbar setEnabled:self.webview.request.URL && self.frameCount == 0 forButtonWithTitle:kBLCWebBrowserRefreshString];
     
 }
+
+- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPanWithOffset:(CGPoint)offset {
+    CGPoint startingPoint = toolbar.frame.origin;
+    CGPoint newPoint = CGPointMake(startingPoint.x + offset.x, startingPoint.y + offset.y);
+    
+    CGRect potentialNewFrame = CGRectMake(newPoint.x, newPoint.y, CGRectGetWidth(toolbar.frame), CGRectGetHeight(toolbar.frame));
+    
+    if (CGRectContainsRect(self.view.bounds, potentialNewFrame)) {
+        toolbar.frame = potentialNewFrame;
+    }
+}
+
+- (void)floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithScale:(CGFloat)scale {
+    
+    CGPoint startingPoint = toolbar.frame.origin;
+//    CGPoint newPoint = CGPointMake(startingPoint.x + offset.x, startingPoint.y + offset.y);
+    
+    CGRect potentialNewFrame = CGRectMake(startingPoint.x, startingPoint.y, CGRectGetWidth(toolbar.frame)*sqrt(scale), CGRectGetHeight(toolbar.frame)*sqrt(scale));
+    
+    if (CGRectContainsRect(self.view.bounds, potentialNewFrame) && potentialNewFrame.size.height>20) {
+        toolbar.frame = potentialNewFrame;
+    }
+}
+
+- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithDuration:(CGFloat)duration {
+   
+    self.colors = @[[UIColor colorWithRed:0/255.0 green:158/255.0 blue:203/255.0 alpha:1],
+                    [UIColor colorWithRed:3/255.0 green:105/255.0 blue:97/255.0 alpha:1],
+                    [UIColor colorWithRed:50/255.0 green:165/255.0 blue:164/255.0 alpha:1],
+                    [UIColor colorWithRed:200/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
+    
+    NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
+    
+    // Make the 4 labels
+    for (NSString *currentTitle in self.currentTitles) {
+        UILabel *label = [[UILabel alloc] init];
+        label.userInteractionEnabled = NO;
+        label.alpha = 0.25;
+        
+        NSUInteger currentTitleIndex = [self.currentTitles indexOfObject:currentTitle]; // 0 through 3
+        NSString *titleForThisLabel = [self.currentTitles objectAtIndex:currentTitleIndex];
+        UIColor *colorForThisLabel = [self.colors objectAtIndex:currentTitleIndex];
+        
+        label.textAlignment = NSTextAlignmentCenter;
+        label.font = [UIFont systemFontOfSize:10];
+        label.text = titleForThisLabel;
+        label.backgroundColor = colorForThisLabel;
+        label.textColor = [UIColor whiteColor];
+        
+        [labelsArray addObject:label];
+    }
+    
+    self.labels = labelsArray;
+    
+    for (UILabel *thisLabel in self.labels) {
+        [self.view addSubview:thisLabel];
+    }
+    
+    
+}
+
+
+
+
+
+
 
 /*
 - (void) addButtonTargets {
