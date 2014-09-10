@@ -11,7 +11,7 @@
 @interface BLCAwesomeFloatingToolbar ()
 
 @property (nonatomic, strong) NSArray *currentTitles;
-@property (nonatomic, strong) NSArray *colors;
+@property (nonatomic, strong) NSMutableArray *colors;
 @property (nonatomic, strong) NSArray *labels;
 @property (nonatomic,strong) UITapGestureRecognizer *tapGesture;
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
@@ -34,7 +34,7 @@
         self.colors = @[[UIColor colorWithRed:199/255.0 green:158/255.0 blue:203/255.0 alpha:1],
                         [UIColor colorWithRed:255/255.0 green:105/255.0 blue:97/255.0 alpha:1],
                         [UIColor colorWithRed:222/255.0 green:165/255.0 blue:164/255.0 alpha:1],
-                        [UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
+                        [UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1]].mutableCopy;
         
         NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
         
@@ -79,42 +79,7 @@
     return self;
 }
 
-- (void) floatingToolbar:(BLCAwesomeFloatingToolbar *)toolbar didTryToPinchWithDuration:(CGFloat)duration {
-    
-    self.colors = @[[UIColor colorWithRed:0/255.0 green:158/255.0 blue:203/255.0 alpha:1],
-                    [UIColor colorWithRed:3/255.0 green:105/255.0 blue:97/255.0 alpha:1],
-                    [UIColor colorWithRed:50/255.0 green:165/255.0 blue:164/255.0 alpha:1],
-                    [UIColor colorWithRed:200/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
-    
-    NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
-    
-    // Make the 4 labels
-    for (NSString *currentTitle in self.currentTitles) {
-        UILabel *label = [[UILabel alloc] init];
-        label.userInteractionEnabled = NO;
-        label.alpha = 0.25;
-        
-        NSUInteger currentTitleIndex = [self.currentTitles indexOfObject:currentTitle]; // 0 through 3
-        NSString *titleForThisLabel = [self.currentTitles objectAtIndex:currentTitleIndex];
-        UIColor *colorForThisLabel = [self.colors objectAtIndex:currentTitleIndex];
-        
-        label.textAlignment = NSTextAlignmentCenter;
-        label.font = [UIFont systemFontOfSize:10];
-        label.text = titleForThisLabel;
-        label.backgroundColor = colorForThisLabel;
-        label.textColor = [UIColor whiteColor];
-        
-        [labelsArray addObject:label];
-    }
-    
-    self.labels = labelsArray;
-    
-    for (UILabel *thisLabel in self.labels) {
-        [self addSubview:thisLabel];
-    }
-    
-    
-}
+
 
 - (void) tapFired:(UITapGestureRecognizer *)recognizer {
     if (recognizer.state == UIGestureRecognizerStateRecognized) {
@@ -162,16 +127,16 @@
 }
 
 - (void) longPress:(UILongPressGestureRecognizer *)recognizer {
-    if (recognizer.state == UIGestureRecognizerStateChanged) {
-       // CGPoint translation = [recognizer translationInView:self];
+    
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        [self.colors exchangeObjectAtIndex:2 withObjectAtIndex:3];
+        [self.colors exchangeObjectAtIndex:0 withObjectAtIndex:1];
         
-        NSLog(@"New Press: %f",[recognizer minimumPressDuration]);
-        
-        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPressWithDuration:)]) {
-            [self.delegate floatingToolbar:self didTryToPinchWithDuration:[recognizer minimumPressDuration]];
+        for (UILabel *label in self.labels) {
+          NSUInteger currentLabelIndex = [self.labels indexOfObject:label];
+          UIColor *colorForThisLabel = [self.colors objectAtIndex:currentLabelIndex];
+          label.backgroundColor = colorForThisLabel;
         }
-        
-        [recognizer setMinimumPressDuration:[recognizer minimumPressDuration]];
     }
 }
 
